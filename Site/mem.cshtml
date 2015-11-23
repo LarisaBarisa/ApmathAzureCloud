@@ -1,0 +1,77 @@
+@{
+	var amplitudeRequest = Request.Params["amplitude"];
+	var amplitudeValue = 1;
+	var clear = int.TryParse(amplitudeRequest, out amplitudeValue);
+	var errorMssage = "no amplitude provided, please input http://apmath4oj.azurewebsites.net/mem.cshtml?amplitude=5";
+}
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./mathbox-bundle.min.js"></script>
+  <title>MathBox Test</title>
+</head>
+<body>
+<script type="text/javascript">
+
+@if(!clear){
+	Response.Write(String.Format("alert({0});", errorMssage));
+}
+
+ mathbox = mathBox({
+      plugins: ['core', 'controls', 'cursor'],
+      controls: {
+        klass: THREE.OrbitControls
+      },
+    });
+    three = mathbox.three;
+
+    three.camera.position.set(3.5, 1.4, -2.3);
+    three.renderer.setClearColor(new THREE.Color(0x204060), 1.0);
+
+    time = 0
+    three.on('update', function () {
+      clock = three.Time.clock
+      time = clock / 4
+    });
+
+    view = mathbox
+      .unit({
+        scale: 720,
+      })
+      .cartesian({
+        range: [[-3, 3], [0, 6], [-3, 3]],
+        scale: [2, 2, 2],
+      });
+    view.axis({ axis: 1, width: 15 });
+    view.axis({ axis: 2, width: 15 });
+      view.axis({ axis: 3, width: 15 });
+
+    view.grid({
+      width: 5,
+      opacity: 0.5,
+      axes: [1, 3],
+    });
+
+    view.area({
+      id: 'sampler',
+      width: 83,
+      height: 83,
+      axes: [1, 3],
+      expr: function (emit, x, y, i, j) {
+        emit(x, 3 * (.5 + .5 * (Math.sin(x*@amplitudeValue + time) * Math.sin(y/@amplitudeValue + time))), y);
+      },
+      channels: 3,
+    });
+    view.surface({
+      lineX: true,
+      lineY: true,
+      shaded: true,
+      color: 0x5090FF,
+      width: 5,
+    });
+
+    surface = mathbox.select('surface')
+
+</script>
+</body>
+</html>
